@@ -1,0 +1,25 @@
+name: Run bot
+
+on:
+  workflow_dispatch:   # cho phép chạy thủ công
+  schedule:
+    - cron: "0 * * * *"  # chạy mỗi giờ
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || echo "no requirements.txt"
+
+      - name: Run bot
+        run: python bot.py
