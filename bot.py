@@ -1,8 +1,9 @@
+import os
 import requests
-import time
 
-BOT_TOKEN = "8171774258:AAHsjYpqgCz3NTWbLmDLf6Sl2FrTtb3jJKo"
-CHAT_ID = 5035183371  # CHAT_ID bạn vừa lấy được
+# 🧠 Lấy token và chat_id từ GitHub Secrets (đã cài trong Settings > Secrets)
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 url = "https://testnet.api.euclidprotocol.com/api/v1/routes?limit=10"
 payload = {
@@ -13,28 +14,24 @@ payload = {
     "chain_uids": []
 }
 
-while True:
-    try:
-        # Gọi API để lấy tỷ giá
-        res = requests.post(url, json=payload)
-        data = res.json()
+try:
+    # Gọi API để lấy tỷ giá
+    res = requests.post(url, json=payload)
+    data = res.json()
 
-        amount_in = int(payload["amount_in"])
-        amount_out = int(data["paths"][0]["path"][0]["amount_out"])
-        rate = amount_out / amount_in
+    amount_in = int(payload["amount_in"])
+    amount_out = int(data["paths"][0]["path"][0]["amount_out"])
+    rate = amount_out / amount_in
 
-        msg = f"1 MON ≈ {rate:.6f} PHRS"
+    msg = f"1 MON ≈ {rate:.6f} PHRS"
 
-        # Gửi tin nhắn sang Telegram
-        requests.post(
-            f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-            data={"chat_id": CHAT_ID, "text": msg}
-        )
+    # Gửi tin nhắn sang Telegram
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        data={"chat_id": CHAT_ID, "text": msg}
+    )
 
-        print("Đã gửi:", msg)
+    print("Đã gửi:", msg)
 
-    except Exception as e:
-        print("Lỗi:", e)
-
-    # Đợi 5 phút rồi lặp lại
-    time.sleep(300)
+except Exception as e:
+    print("Lỗi:", e)
