@@ -1,9 +1,9 @@
-name: Run bot
+name: Auto Run Bot
 
 on:
-  workflow_dispatch:   # cho phép chạy thủ công
   schedule:
-    - cron: "0 * * * *"  # chạy mỗi giờ
+    - cron: "*/10 * * * *"   # ⏰ chạy mỗi 10 phút (UTC)
+  workflow_dispatch:          # cho phép chạy thủ công nếu muốn
 
 jobs:
   run:
@@ -18,8 +18,10 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt || echo "no requirements.txt"
+        run: pip install requests
 
       - name: Run bot
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python bot.py
